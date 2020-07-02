@@ -21,6 +21,7 @@ def create_app(test_config=None):
       header['Access-Control-Allow-Methods'] = 'POST,GET,PUT,DELETE,PATCH,OPTIONS'
       return response
 
+
   ## ROUTES
  
   @app.route('/')
@@ -57,12 +58,18 @@ def create_app(test_config=None):
   #@requires_auth('view:actors')
   def get_actors():
       actors = Actor.query.all()
-      actors = [actor.format() for actor in actors]
-      result = {
-        "success": True,
-        "actors": actors
-      }
-      return jsonify(result)
+      if len(actors) == 0:
+            abort(404)
+      try:
+          actors = [actor.format() for actor in actors]
+
+          return jsonify({
+              'success': True,
+              'actors': actors,
+          }), 200
+      except Exception:
+          abort(422)
+
 
   @app.route('/movies', methods=['POST'])
   #@requires_auth('post:movie')
