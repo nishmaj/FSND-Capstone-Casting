@@ -23,6 +23,10 @@ def create_app(test_config=None):
 
   ## ROUTES
  
+  @app.route('/')
+  def get_index():
+      return jsonify('Success')
+
   '''
   GET /movies
       Public route for getting all movies
@@ -230,7 +234,7 @@ def create_app(test_config=None):
       return jsonify({
                       "success": False, 
                       "error": 400,
-                      "message": get_error_message(error, "bad request")
+                      "message": error_message(error, "bad request")
                       }), 400
 
   @app.errorhandler(404)
@@ -238,7 +242,7 @@ def create_app(test_config=None):
       return jsonify({
                       "success": False, 
                       "error": 404,
-                      "message": get_error_message(error, "resource not found")
+                      "message": error_message(error, "resource not found")
                       }), 404
 
   # @app.errorhandler(AuthError)
@@ -250,7 +254,15 @@ def create_app(test_config=None):
   #                     }), AuthError.status_code
 
 
+  def error_message(error, default_text):
+      try:
+          # Return message contained in error, if possible
+          return error.description['message']
+      except:
+          # otherwise, return given default text
+          return default_text
 
+  
   return app
 app = create_app()
 
