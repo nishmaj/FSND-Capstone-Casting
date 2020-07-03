@@ -42,6 +42,7 @@ def create_app(test_config=None):
       #print(movies)
       for movie in movies:
         movie['actors'] = [i.format() for i in movie['actors']]
+
       result = {
         "success": True,
         "movies": movies
@@ -58,8 +59,8 @@ def create_app(test_config=None):
   #@requires_auth('view:actors')
   def get_actors():
       actors = Actor.query.all()
-      if len(actors) == 0:
-            abort(404)
+      # if len(actors) == 0:
+      #       abort(404)
       try:
           actors = [actor.format() for actor in actors]
 
@@ -71,7 +72,7 @@ def create_app(test_config=None):
           abort(422)
 
 
-  @app.route('/movies', methods=['POST'])
+  @app.route('/movies/add', methods=['POST'])
   #@requires_auth('post:movie')
   def post_new_movie():
       body = request.get_json()
@@ -92,7 +93,7 @@ def create_app(test_config=None):
       })
 
 
-  @app.route('/actors', methods=['POST'])
+  @app.route('/actors/add', methods=['POST'])
   #@requires_auth('post:actor')
   def post_new_actor():
       body = request.get_json()
@@ -102,18 +103,28 @@ def create_app(test_config=None):
       role = body.get('role', None)
       movie_id = body.get('movie_id', None)
 
-      actor = Actor(name=name, age=age, gender=gender, role=role, movie_id=movie_id)
-      actor.insert()
-      new_actor = Actor.query.get(actor.id)
-      new_actor = new_actor.format()
+      # if not (name and age and gender and movie_id):
+      #       abort(422)
+      try:
+          actor = Actor(name=name,
+                        age=age,
+                        gender=gender,
+                        role=role,
+                        movie_id=movie_id)
 
-      return jsonify({
-        'success': True,
-        'created': actor.id,
-        'new_actor': new_actor
-      })
+          actor.insert()
+          new_actor = Actor.query.get(actor.id)
+          return jsonify({
+              'success': True,
+              'created': new_actor.id,
+              'new_actor': new_actor.format()
+          })
+      except BaseException as e:
+          print(e)
+          abort(422)
 
-  @app.route('/movies/<int:movie_id>', methods=['DELETE'])
+
+  @app.route('/movies/delete/<int:movie_id>', methods=['DELETE'])
   #@requires_auth('delete:movie')
   def delete_movie(movie_id):
 
@@ -134,7 +145,7 @@ def create_app(test_config=None):
         "message" : "Movie has been deleted"
       })
 
-  @app.route('/actors/<int:actor_id>', methods=['DELETE'])
+  @app.route('/actors/delete/<int:actor_id>', methods=['DELETE'])
   #@requires_auth('delete:actor')
   def delete_actor(actor_id):
 
@@ -157,7 +168,7 @@ def create_app(test_config=None):
         "message" : "Actor has been deleted"
       })
 
-  @app.route('/movies/<int:movie_id>', methods=['PATCH'])
+  @app.route('/movies/update/<int:movie_id>', methods=['PATCH'])
   #@requires_auth('patch:movies')
   def patch_movie(movie_id):
       body = request.get_json()
@@ -166,7 +177,12 @@ def create_app(test_config=None):
       release_date = body.get('release_date', None)
       year = body.get('year', None)
       director = body.get('director', None)
+      print(body) 
       movie = Movie.query.filter_by(id=movie_id).one_or_none()
+
+      # If no movie with given id could found, abort 404
+      if not movie:
+          abort(404, {'message': 'Movie with id {} not found in database.'.format(movie_id)})
 
       movie.title = title
       movie.release_date = release_date
@@ -185,7 +201,7 @@ def create_app(test_config=None):
 
       })
 
-  @app.route('/actors/<int:actor_id>', methods=['PATCH'])
+  @app.route('/actors/update/<int:actor_id>', methods=['PATCH'])
   #@requires_auth('patch:actors')
   def patch_actor(actor_id):
       body = request.get_json()
@@ -197,6 +213,11 @@ def create_app(test_config=None):
       movie_id = body.get('movie_id', None)
 
       actor = Actor.query.filter_by(id=actor_id).one_or_none()
+
+      # If no movie with given id could found, abort 404
+      if not actor:
+          abort(404, {'message': 'Actor with id {} not found in database.'.format(actor_id)})
+
       actor.name = name
       actor.age = age
       actor.gender = gender
