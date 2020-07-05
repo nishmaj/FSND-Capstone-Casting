@@ -52,7 +52,7 @@ Actors with attributes name, age, role and gender
 
 ## Environment Variables
 
-In the `.env` file, the JWT token for each User Role
+In the `setup.sh` file, the JWT token for each User Role
 - CASTING_ASSISTANT
 - CASTING_DIRECTOR
 - EXECUTIVE_PRODUCER
@@ -66,16 +66,16 @@ Casting Assistant
 
 Casting Director
 #####  All permissions a Casting Director has
-- POST:actor
-- DELETE:actor
-- PATCH:actor
-- PATCH:movie
+- POST:actors/add
+- DELETE:actors/delete
+- PATCH:actors/update
+- PATCH:movies/update
 
 Executive Producer
 
 ##### All permissions an Executive Producer has
-- POST:movie
-- DELETE:movie
+- POST:movies/add
+- DELETE:movies/delete
 
 ## Endpoints
 

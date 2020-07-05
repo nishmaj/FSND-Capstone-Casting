@@ -123,7 +123,7 @@ class CastingTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
     
     def test_update_actor_casting_director(self):
-        res = self.client().patch('/actors/update/1',
+        res = self.client().patch('/actors/update/2',
                                     headers={
                                      "Authorization": "Bearer {}".format(
                                          self.casting_director)
@@ -177,7 +177,7 @@ class CastingTestCase(unittest.TestCase):
         self.assertEqual(data['new_movie']['title'], 'New Test Movie')
 
     def test_delete_movie_executive_producer(self):
-        res = self.client().delete('/movies/delete/100',
+        res = self.client().delete('/movies/delete/3',
                                     headers={
                                     "Authorization": "Bearer {}".format(
                                         self.executive_producer)
