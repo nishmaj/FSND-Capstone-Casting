@@ -74,7 +74,7 @@ def create_app(test_config=None):
 
 
   @app.route('/movies/add', methods=['POST'])
-  @requires_auth('post:movie/add')
+  @requires_auth('post:movies/add')
   def post_new_movie(token):
       body = request.get_json()
 
@@ -95,7 +95,7 @@ def create_app(test_config=None):
 
 
   @app.route('/actors/add', methods=['POST'])
-  @requires_auth('post:actor/add')
+  @requires_auth('post:actors/add')
   def post_new_actor(token):
       body = request.get_json()
       name = body.get('name', None)
@@ -126,7 +126,7 @@ def create_app(test_config=None):
 
 
   @app.route('/movies/delete/<int:movie_id>', methods=['DELETE'])
-  @requires_auth('delete:movie/delete')
+  @requires_auth('delete:movies/delete')
   def delete_movie(token,movie_id):
 
       # Abort if no movie_id has been provided
@@ -147,7 +147,7 @@ def create_app(test_config=None):
       })
 
   @app.route('/actors/delete/<int:actor_id>', methods=['DELETE'])
-  @requires_auth('delete:actor/delete')
+  @requires_auth('delete:actors/delete')
   def delete_actor(token,actor_id):
 
       # Abort if no actor_id has been provided
