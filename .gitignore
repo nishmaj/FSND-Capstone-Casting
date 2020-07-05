@@ -1,6 +1,8 @@
 .vscode
+*.pyc
 __pycache__
-__pycache__/*
+__pycache__/
+__pycache__/*.pyc
 venv
 
 # OS generated files #

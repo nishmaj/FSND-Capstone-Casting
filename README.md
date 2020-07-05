@@ -2,7 +2,7 @@
 
 ## capstone project for the udacity full stack nanodegree program.
 
-**Heroku link:** (https://capstone-fsnd.herokuapp.com/)
+**Heroku link:** (https://fsnd-cap-casting.herokuapp.com//)
 
 ## Getting Started
 
@@ -98,7 +98,7 @@ response =
 }
 
 
-POST '/actors'
+POST '/actors/add'
 
 response = {
   "created": 1,
@@ -113,7 +113,7 @@ response = {
   "success": true
 }
 
-PATCH '/actors/<int:actor_id>'
+PATCH '/actors/update/<int:actor_id>'
 
 params = <int:actor_id>
 
@@ -130,7 +130,7 @@ response = {
   "success": true
 }
 
-DELETE '/actors/<int:actor_id>'
+DELETE '/actors/delete/<int:actor_id>'
 
 params = <int:actor_id>
 
@@ -164,7 +164,7 @@ response = {
   "success": true
 }
 
-POST '/movies'
+POST '/movies/add'
 
 response = {
   "created": 1,
@@ -179,7 +179,7 @@ response = {
   "success": true
 }
 
-PATCH '/movies/<int:movie_id>'
+PATCH '/movies/update/<int:movie_id>'
 
 params = <int:movie_id>
 
@@ -206,7 +206,7 @@ response = {
 }
 
 
-DELETE '/movies/<int:movie_id>'
+DELETE '/movies/delete/<int:movie_id>'
 params = <int:movie_id>
 
 response = {

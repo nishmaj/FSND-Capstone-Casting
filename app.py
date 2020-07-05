@@ -3,6 +3,7 @@ from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from models import db_drop_and_create_all, setup_db, Movie, Actor, db
+from auth import AuthError, requires_auth
 
 
 def create_app(test_config=None):
@@ -35,8 +36,8 @@ def create_app(test_config=None):
           or appropriate status code indicating reason for failure
   '''
   @app.route('/movies', methods=['GET'])
-  #@requires_auth('view:movies')
-  def get_movies():
+  @requires_auth('get:movies')
+  def get_movies(token):
       movies = Movie.query.all()
       movies = [movie.format() for movie in movies]
       #print(movies)
@@ -56,8 +57,8 @@ def create_app(test_config=None):
           or appropriate status code indicating reason for failure
   '''
   @app.route('/actors', methods=['GET'])
-  #@requires_auth('view:actors')
-  def get_actors():
+  @requires_auth('get:actors')
+  def get_actors(token):
       actors = Actor.query.all()
       # if len(actors) == 0:
       #       abort(404)
@@ -73,8 +74,8 @@ def create_app(test_config=None):
 
 
   @app.route('/movies/add', methods=['POST'])
-  #@requires_auth('post:movie')
-  def post_new_movie():
+  @requires_auth('post:movie/add')
+  def post_new_movie(token):
       body = request.get_json()
 
       title = body.get('title', None)
@@ -94,8 +95,8 @@ def create_app(test_config=None):
 
 
   @app.route('/actors/add', methods=['POST'])
-  #@requires_auth('post:actor')
-  def post_new_actor():
+  @requires_auth('post:actor/add')
+  def post_new_actor(token):
       body = request.get_json()
       name = body.get('name', None)
       age = body.get('age', None)
@@ -125,8 +126,8 @@ def create_app(test_config=None):
 
 
   @app.route('/movies/delete/<int:movie_id>', methods=['DELETE'])
-  #@requires_auth('delete:movie')
-  def delete_movie(movie_id):
+  @requires_auth('delete:movie/delete')
+  def delete_movie(token,movie_id):
 
       # Abort if no movie_id has been provided
       if not movie_id:
@@ -146,8 +147,8 @@ def create_app(test_config=None):
       })
 
   @app.route('/actors/delete/<int:actor_id>', methods=['DELETE'])
-  #@requires_auth('delete:actor')
-  def delete_actor(actor_id):
+  @requires_auth('delete:actor/delete')
+  def delete_actor(token,actor_id):
 
       # Abort if no actor_id has been provided
       if not actor_id:
@@ -169,8 +170,8 @@ def create_app(test_config=None):
       })
 
   @app.route('/movies/update/<int:movie_id>', methods=['PATCH'])
-  #@requires_auth('patch:movies')
-  def patch_movie(movie_id):
+  @requires_auth('patch:movies/update')
+  def patch_movie(token,movie_id):
       body = request.get_json()
 
       title = body.get('title', None)
@@ -202,8 +203,8 @@ def create_app(test_config=None):
       })
 
   @app.route('/actors/update/<int:actor_id>', methods=['PATCH'])
-  #@requires_auth('patch:actors')
-  def patch_actor(actor_id):
+  @requires_auth('patch:actors/update')
+  def patch_actor(token,actor_id):
       body = request.get_json()
       print(body) 
       name = body.get('name', None)
@@ -233,22 +234,6 @@ def create_app(test_config=None):
 
       })
 
-  # @app.errorhandler(404)
-  # def not_found(error):
-  #     return jsonify({
-  #       'success': False,
-  #       'error' : 404,
-  #       'message' : 'Not Found'
-  #     }), 404
-
-  # @app.errorhandler(422)
-  # def unprocessable_entity(error):
-  #     return jsonify({
-  #       'success': False,
-  #       'error': 422,
-  #       'message': 'Unprocessable Entity'
-  #     })      
-
   @app.errorhandler(422)
   def unprocessable(error):
       return jsonify({
@@ -273,13 +258,13 @@ def create_app(test_config=None):
                       "message": error_message(error, "resource not found")
                       }), 404
 
-  # @app.errorhandler(AuthError)
-  # def authentification_failed(AuthError): 
-  #     return jsonify({
-  #                     "success": False, 
-  #                     "error": AuthError.status_code,
-  #                     "message": AuthError.error['description']
-  #                     }), AuthError.status_code
+  @app.errorhandler(AuthError)
+  def authentification_failed(AuthError): 
+      return jsonify({
+                      "success": False, 
+                      "error": AuthError.status_code,
+                      "message": AuthError.error['description']
+                      }), AuthError.status_code
 
 
   def error_message(error, default_text):
